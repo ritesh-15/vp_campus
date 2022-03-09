@@ -45,4 +45,7 @@
     <string name="choose_department">Choose department</string>
     <string name="choose">Choose</string>
 
+    <!-- Profile activity   -->
+    <string name="profile">Profile</string>
+
 </resources>

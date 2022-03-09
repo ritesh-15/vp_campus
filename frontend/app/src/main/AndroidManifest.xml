@@ -10,8 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VpCampus">
         <activity
+            android:name=".activities.user.ProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            />
+        <activity
             android:name=".activities.auth.ActivationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".activities.auth.VerificationActivity"
             android:exported="false"
