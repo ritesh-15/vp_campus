@@ -16,11 +16,8 @@ class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
 
-    try {
-      AuthValidation.loginValidation({ email, password });
-    } catch (error: any) {
-      return next(CreateHttpError.forbidden(error.message));
-    }
+    if(!email || !password)
+    return next(CreateHttpError.forbidden("Email address and password is required!"))
 
     try {
       // check if user already exists with this email
@@ -41,7 +38,7 @@ class AuthController {
           )
         );
 
-      await setResponseToken(res, user);
+     const tokens =  await setResponseToken(res, user);
 
       return res.json({
         ok: true,
@@ -56,6 +53,7 @@ class AuthController {
           bio: user.bio,
           role: user.role,
         },
+        tokens
       });
     } catch (error) {
       return next(
@@ -98,7 +96,7 @@ class AuthController {
 
       const user = await User.create(body);
 
-      await setResponseToken(res, user);
+     const tokens  =  await setResponseToken(res, user);
 
       return res.json({
         ok: true,
@@ -113,6 +111,7 @@ class AuthController {
           bio: user.bio,
           role: user.role,
         },
+        tokens
       });
     } catch (error) {
       return next(
@@ -196,7 +195,12 @@ class AuthController {
   // @access public
 
   async refresh(req: Request, res: Response, next: NextFunction) {
-    const { refreshToken: recivedRefreshToken } = req.cookies;
+    let { refreshToken: recivedRefreshToken } = req.cookies;
+
+    if(!recivedRefreshToken){
+      const token = req.headers['refreshtoken']
+      recivedRefreshToken = token?.toString().split(" ")[1]
+    }
 
     if (!recivedRefreshToken)
       return next(CreateHttpError.notFound("Refresh token is required!"));
@@ -211,9 +215,9 @@ class AuthController {
       // revoke last refresh tokens
       await Token.deleteMany({ userId: user._id });
 
-      await setResponseToken(res, user);
+      const tokens = await setResponseToken(res, user);
 
-      return res.json({ ok: true, user });
+      return res.json({ ok: true, user ,tokens});
     } catch (error) {
       return next(CreateHttpError.unauthorized("Unauthorised!"));
     }

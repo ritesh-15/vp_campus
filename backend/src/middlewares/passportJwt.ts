@@ -5,7 +5,14 @@ import { ACESS_TOKEN_SECRET } from "../keys/secrets";
 import User from "../model/userModel";
 
 const extractTokenFromCookie = (req: Request) => {
-  const { accessToken } = req.cookies;
+  // if token not in cookies the search in headers
+  let { accessToken } = req.cookies;
+
+  if(!accessToken){
+     const token = req.headers['authorization']
+
+     accessToken = token?.split(" ")[1]
+  }
 
   return accessToken;
 };
